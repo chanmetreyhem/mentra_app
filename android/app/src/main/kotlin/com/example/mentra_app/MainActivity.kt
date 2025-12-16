@@ -46,7 +46,7 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun getGreeting(): String {
-        return "Hello" ;
+        return "Hello"
     }
 }
 

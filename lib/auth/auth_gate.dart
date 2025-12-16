@@ -18,9 +18,9 @@ class AuthGate extends StatelessWidget {
           );
         }
         final session = snapshot.hasData ? snapshot.data!.session : null;
-        
+
         if (session != null) {
-          return HomeScreen(email: "");
+          return HomeScreen();
         } else {
           return LoginScreen();
         }
@@ -40,19 +40,30 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final AuthService _authService = AuthService();
+  bool isLoading = false;
+  void setLoading(bool state) {
+    setState(() {
+      isLoading = state;
+    });
+  }
+
   Future<void> signIn() async {
     final email = _emailController.text;
     final password = _passwordController.text;
+
     try {
+      setLoading(true);
       final res = await _authService.singIn(email, password);
+      await Future.delayed(Duration(microseconds: 200));
       if (mounted) {
         String jwt = res.session!.accessToken;
         print("token $jwt");
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (c) => HomeScreen(email: email)),
+          MaterialPageRoute(builder: (c) => HomeScreen()),
         );
       }
+      setLoading(false);
     } catch (e) {
       print(e);
     }
@@ -62,47 +73,54 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            mainAxisAlignment: .center,
-            crossAxisAlignment: .center,
-            children: [
-              Text(
-                "Sing In your account",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              TextField(
-                controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
-              ),
-              TextField(
-                controller: _passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
-                obscureText: true,
-              ),
-              ElevatedButton(
-                child: Text('Login'),
-                onPressed: () {
-                  signIn();
-                },
-              ),
-              Row(
-                mainAxisAlignment: .center,
-                children: [
-                  Text("Don't have account?"),
-                  InkWell(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SignUpScreen()),
+        child: isLoading
+            ? CircularProgressIndicator()
+            : Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  mainAxisAlignment: .center,
+                  crossAxisAlignment: .center,
+                  children: [
+                    Text(
+                      "Sing In your account",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    child: Text("Sing Up"),
-                  ),
-                ],
+                    TextField(
+                      controller: _emailController,
+                      decoration: InputDecoration(labelText: 'Email'),
+                    ),
+                    TextField(
+                      controller: _passwordController,
+                      decoration: InputDecoration(labelText: 'Password'),
+                      obscureText: true,
+                    ),
+                    ElevatedButton(
+                      child: Text('Login'),
+                      onPressed: () {
+                        signIn();
+                      },
+                    ),
+                    Row(
+                      mainAxisAlignment: .center,
+                      children: [
+                        Text("Don't have account?"),
+                        InkWell(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SignUpScreen(),
+                            ),
+                          ),
+                          child: Text("Sing Up"),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -138,6 +156,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
     try {
       final res = await _authService.signUp(email, password);
+      await Future.delayed(Duration(microseconds: 200));
       if (res.session != null) {
         setIsLoading(false);
         Navigator.pop(context);
@@ -165,37 +184,41 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Scaffold(
       appBar: AppBar(title: Text("Sing Up")),
       body: Center(
-        child: Padding(
-          padding: EdgeInsetsGeometry.symmetric(horizontal: 20),
-          child: Column(
-            spacing: 10,
-            mainAxisAlignment: .center,
-            crossAxisAlignment: .center,
-            children: [
-              TextField(
-                controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
-              ),
-              TextField(
-                controller: _passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
-                obscureText: true,
-              ),
-              TextField(
-                controller: _confirmPasswordController,
-                decoration: InputDecoration(labelText: 'Confirm Password'),
-                obscureText: true,
-              ),
+        child: isLoading
+            ? CircularProgressIndicator()
+            : Padding(
+                padding: EdgeInsetsGeometry.symmetric(horizontal: 20),
+                child: Column(
+                  spacing: 10,
+                  mainAxisAlignment: .center,
+                  crossAxisAlignment: .center,
+                  children: [
+                    TextField(
+                      controller: _emailController,
+                      decoration: InputDecoration(labelText: 'Email'),
+                    ),
+                    TextField(
+                      controller: _passwordController,
+                      decoration: InputDecoration(labelText: 'Password'),
+                      obscureText: true,
+                    ),
+                    TextField(
+                      controller: _confirmPasswordController,
+                      decoration: InputDecoration(
+                        labelText: 'Confirm Password',
+                      ),
+                      obscureText: true,
+                    ),
 
-              ElevatedButton(
-                child: Text('Sign Up'),
-                onPressed: () {
-                  signUp();
-                },
+                    ElevatedButton(
+                      child: Text('Sign Up'),
+                      onPressed: () {
+                        signUp();
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
-        ),
       ),
     );
   }

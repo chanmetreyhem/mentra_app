@@ -1,43 +1,44 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:convert';
-import 'dart:io';
-
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:web_socket_channel/io.dart';
-import 'package:http/http.dart' as http;
 import 'package:mentra_app/auth/auth_service.dart';
-import 'package:mentra_app/features/ble_device/presentation/screens/ble_screen.dart';
-
+import 'package:mentra_app/router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'auth/auth_gate.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
+  await dotenv.load(fileName: 'assets/.env');
   await Supabase.initialize(
-    url: "https://bvqnrwdibudqxcdhzyiz.supabase.co",
-    anonKey:
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2cW5yd2RpYnVkcXhjZGh6eWl6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUzMjA5OTEsImV4cCI6MjA4MDg5Njk5MX0.m2tj352PPLDgLuy4ZCVzAHr_26UdsXjpFksOVKwJZXE",
+    url: dotenv.env['SUPABASE_URL'] as String,
+    anonKey: dotenv.env['ANON_KEY'] as String,
   );
   runApp(MyApp());
 }
+
+final Dio dio = Dio(
+  BaseOptions(
+    headers: {"Content-Type": "application/json", "Accept": "application/json"},
+  ),
+);
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
     return ProviderScope(
-      child: MaterialApp(
+      child: MaterialApp.router(
+        routerConfig: goRouter,
         theme: ThemeData(primaryColor: Colors.black, textTheme: TextTheme()),
-        home: AuthGate(),
+        // home: TodoScreen(),
       ),
     );
   }
 }
 
 class HomeScreen extends StatefulWidget {
-  String email;
-  HomeScreen({Key? key, required this.email}) : super(key: key);
+  const HomeScreen({super.key});
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -47,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final AuthService _auth = AuthService();
   String _batteryLevel = 'Unknown battery level.';
   String _greeting = "No";
-  String _email = "Unknow email";
+  String _email = "Unknown email";
   String _token = "none";
   User? user;
   Future<void> _getGreeting() async {
@@ -79,18 +80,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> exchangeToken() async {
     try {
-      print("token : $_token");
-      final res = await http.post(
-        Uri.parse("https://devapi.mentra.glass/api/auth/exchange-token"),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'supabaseToken': _token}),
+      final res = await dio.post(
+        'https://devapi.mentra.glass/api/auth/exchange-token',
+        data: {'supabaseToken': _token},
       );
-      print("code ${res.statusCode} - body ${res.body}");
+      print("code ${res.statusCode} - body ${res.data}");
       if (res.statusCode == 200) {
-        print("res : ${res.body}");
+        print("res : ${res.data}");
       }
-    } catch (e) {
-      throw (e);
+    } on DioException catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message ?? "nit")));
     }
   }
 
@@ -101,7 +102,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _email = _auth.getUserByEmail()!;
     _token = _auth.getToken()!;
@@ -109,36 +109,39 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: .center,
-          spacing: 10,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                _getBatteryLevel();
-                _getGreeting();
-              },
-              child: Text("Get BatteryLevel"),
-            ),
-            Text(_batteryLevel),
-            Text(_greeting),
-            Text("email $_email"),
-            Text("Token : $_token"),
-            ElevatedButton(
-              onPressed: () {
-                exchangeToken();
-              },
-              child: Text("Exchange Token"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                signOut();
-              },
-              child: Text("Log out"),
-            ),
-          ],
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: .center,
+            spacing: 10,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  _getBatteryLevel();
+                  _getGreeting();
+                },
+                child: Text("Get BatteryLevel"),
+              ),
+              Text(_batteryLevel),
+              Text(_greeting),
+              Text("email $_email"),
+              Text("Token : $_token"),
+              ElevatedButton(
+                onPressed: () {
+                  exchangeToken();
+                },
+                child: Text("Exchange Token"),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  signOut();
+                },
+                child: Text("Log out"),
+              ),
+            ],
+          ),
         ),
       ),
     );

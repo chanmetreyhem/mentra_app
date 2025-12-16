@@ -1,3 +1,4 @@
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService {
@@ -31,5 +32,9 @@ class AuthService {
   String? getToken() {
     final session = supabaseClient.auth.currentSession;
     return session?.accessToken;
+  }
+
+  Future<void> signWithGoogle() async {
+    final GoogleSignIn googleSignIn;
   }
 }
