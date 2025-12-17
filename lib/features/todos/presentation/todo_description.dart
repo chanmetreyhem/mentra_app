@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mentra_app/features/todos/todo_provider.dart';
-import 'package:mentra_app/features/todos/todo_state.dart';
+import 'package:mentra_app/features/todos/providers/todo_provider.dart';
+import 'package:mentra_app/features/todos/data/todo_state.dart';
 
 class TodoDetailScreen extends ConsumerStatefulWidget {
   late TodoState todo;
@@ -16,7 +16,7 @@ class TodoDetailScreen extends ConsumerStatefulWidget {
 class _TodoDetailScreenState extends ConsumerState<TodoDetailScreen> {
   @override
   Widget build(BuildContext context) {
-    final todoNotifier = ref.read(todoProvider.notifier);
+    final todoNotifier = ref.read(todoListProvider.notifier);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.todo.title),

@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mentra_app/features/todos/todo_screen.dart';
-
-import 'features/todos/todo_description.dart';
+import 'package:mentra_app/features/setting/presentation/setting_screen.dart';
+import 'package:mentra_app/features/todos/presentation/todo_screen.dart';
+import 'features/todos/presentation/add_todo_screen.dart';
+import 'features/todos/presentation/todo_description.dart';
 
 final _routeNavigatorKey = GlobalKey<NavigatorState>();
 final _sectionNavigatorKey = GlobalKey<NavigatorState>();
 
 final goRouter = GoRouter(
-  navigatorKey: _routeNavigatorKey,
+  //navigatorKey: _routeNavigatorKey,
   initialLocation: '/todo',
   routes: [
     StatefulShellRoute.indexedStack(
@@ -26,14 +27,28 @@ final goRouter = GoRouter(
               routes: [
                 GoRoute(
                   path: '/detail',
-                  builder: (context, state) =>  TodoDetailScreen(todo: state.extra as dynamic),
+                  pageBuilder: (context, state) {
+                    return CustomTransitionPage(
+                      transitionDuration: Duration(milliseconds: 500),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                            return FadeTransition(
+                              opacity: CurveTween(
+                                curve: Curves.easeInOutCirc,
+                              ).animate(animation),
+                              child: child,
+                            );
+                          },
+                      child: TodoDetailScreen(todo: state.extra as dynamic),
+                    );
+                  },
                 ),
               ],
             ),
           ],
         ),
         StatefulShellBranch(
-          navigatorKey: _sectionNavigatorKey,
+          //navigatorKey: _sectionNavigatorKey,
           routes: <RouteBase>[
             GoRoute(
               path: '/add',
@@ -44,8 +59,13 @@ final goRouter = GoRouter(
         ),
       ],
     ),
+    GoRoute(
+      name: 'setting',
+      path: '/setting',
+      builder: (context, state) => SettingScreen(),
+    ),
   ],
-//  redirect: (context, state) {},
+  //  redirect: (context, state) {},
 );
 
 class ScaffoldWithNavbar extends StatefulWidget {
@@ -75,16 +95,4 @@ class _ScaffoldWithNavbarState extends State<ScaffoldWithNavbar> {
   }
 }
 
-class CreateTodoScreen extends StatefulWidget {
-  const CreateTodoScreen({super.key});
 
-  @override
-  State<CreateTodoScreen> createState() => _CreateTodoScreenState();
-}
-
-class _CreateTodoScreenState extends State<CreateTodoScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}

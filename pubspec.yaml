@@ -20,6 +20,8 @@ dependencies:
   flutter_screenutil: ^5.9.3
   go_router: ^17.0.1
   hooks_riverpod: ^3.0.3
+  percent_indicator: ^4.2.5
+  riverpod: ^3.0.3
 
 dev_dependencies:
   flutter_test:
@@ -33,3 +35,10 @@ flutter:
   assets:
    - assets/
     
+  fonts:
+    - family: gothic
+      fonts:
+        - asset: assets/fonts/gothic/ScienceGothic_Expanded-Regular.ttf
+          weight: 500
+        - asset: assets/fonts/gothic/ScienceGothic_Condensed-Bold.ttf
+          weight: 700

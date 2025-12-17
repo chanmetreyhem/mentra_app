@@ -2,10 +2,10 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mentra_app/auth/auth_service.dart';
+import 'package:mentra_app/features/auth/auth_service.dart';
 import 'package:mentra_app/router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'auth/auth_gate.dart';
+import 'features/auth/auth_gate.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
@@ -30,7 +30,15 @@ class MyApp extends StatelessWidget {
     return ProviderScope(
       child: MaterialApp.router(
         routerConfig: goRouter,
-        theme: ThemeData(primaryColor: Colors.black, textTheme: TextTheme()),
+        theme: ThemeData(
+          fontFamily: 'gothic',
+          useMaterial3: true,
+          primaryColor: Colors.black,
+          textTheme: TextTheme(
+            bodyMedium: TextStyle(fontWeight: FontWeight.w500),
+            bodyLarge: TextStyle(fontWeight: FontWeight.w700),
+          ),
+        ),
         // home: TodoScreen(),
       ),
     );
@@ -86,12 +94,15 @@ class _HomeScreenState extends State<HomeScreen> {
       );
       print("code ${res.statusCode} - body ${res.data}");
       if (res.statusCode == 200) {
-        print("res : ${res.data}");
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Success")));
+      } else {
       }
     } on DioException catch (e) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(e.message ?? "nit")));
+      ).showSnackBar(SnackBar(content: Text(e.message ?? "init")));
     }
   }
 
