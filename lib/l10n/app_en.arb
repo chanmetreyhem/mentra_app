@@ -1,0 +1,24 @@
+{
+  "@@locale": "en",
+  "chooseLanguageTitle": "Choose Language",
+  "@chooseLanguageTitle": {
+    "description": "Choose language in your app"
+  },
+   "setting" : "Setting",
+    "add" : "Add",
+    "home" : "Home",
+    "total" : "Total",
+    "search" : "Search",
+    "noData" : "No Data",
+    "notStarted" : "Not Started",
+    "inProgress" : "In Progress",
+    "completed" : "Completed",
+    "description" : "Description",
+    "title" : "Title",
+    "all" : "All",
+    "endDate" : "End Date",
+    "startDate" : "Start Date",
+    "status" : "Status",
+    "priority" : "Priority"
+
+}

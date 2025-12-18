@@ -11,7 +11,6 @@ class AuthService {
       password: password,
     );
   }
-
   // sing up email password
   Future<AuthResponse> signUp(String email, String password) async {
     return await supabaseClient.auth.signUp(email: email, password: password);

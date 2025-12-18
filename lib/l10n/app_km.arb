@@ -1,0 +1,24 @@
+{
+  "@@locale": "km",
+  "chooseLanguageTitle": "ជ្រើសរើសភាសារ",
+  "@chooseLanguageTitle": {
+    "description": "ជ្រើសរើសភាសារ"
+  },
+  "setting" : "ការកំណត់",
+  "add" : "បង្កើត",
+  "home" : "ផ្ទះ",
+  "total" : "សរុប",
+      "search" : "ស្វែងរក",
+      "noData" : "គ្មានទិន្ទន័យ",
+      "notStarted" : "មិនទាន់ចាប់ផ្តើម",
+      "inProgress" : "កំពង់ដំណើការ",
+      "completed" : "បញ្ចប់",
+      "description" : "ការពិពណ៌នា",
+      "title" : "ចំណងជើង",
+      "all" : "ទាំងអស់",
+          "endDate" : "កាលបរិច្ឆេតបញ្ចប់",
+          "startDate" : "កាលបរិច្ឆេតចាប់ផ្តើម",
+          "status" : "ស្ធានភាព",
+          "priority" : "Priority"
+
+}

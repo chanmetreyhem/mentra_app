@@ -1,12 +1,18 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/legacy.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mentra_app/core/themes/app_theme.dart';
 import 'package:mentra_app/features/auth/auth_service.dart';
 import 'package:mentra_app/router.dart';
+import 'package:mentra_app/utils/app_language_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'features/auth/auth_gate.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+import 'l10n/app_localizations.dart';
 
 void main() async {
   await dotenv.load(fileName: 'assets/.env');
@@ -14,33 +20,39 @@ void main() async {
     url: dotenv.env['SUPABASE_URL'] as String,
     anonKey: dotenv.env['ANON_KEY'] as String,
   );
-  runApp(MyApp());
+  runApp(ProviderScope(child: MyApp()));
 }
 
+final themeProvider = StateProvider<bool>((ref) => 1 == 0);
 final Dio dio = Dio(
   BaseOptions(
     headers: {"Content-Type": "application/json", "Accept": "application/json"},
   ),
 );
 
-class MyApp extends StatelessWidget {
+class MyApp extends HookConsumerWidget {
   const MyApp({super.key});
   @override
-  Widget build(BuildContext context) {
-    return ProviderScope(
-      child: MaterialApp.router(
-        routerConfig: goRouter,
-        theme: ThemeData(
-          fontFamily: 'gothic',
-          useMaterial3: true,
-          primaryColor: Colors.black,
-          textTheme: TextTheme(
-            bodyMedium: TextStyle(fontWeight: FontWeight.w500),
-            bodyLarge: TextStyle(fontWeight: FontWeight.w700),
-          ),
-        ),
-        // home: TodoScreen(),
-      ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final appLocale = ref.watch(appLanguageProvider);
+    return MaterialApp.router(
+      routerConfig: goRouter,
+      darkTheme: AppTheme.dark,
+      themeMode: ref.watch(themeProvider) ? ThemeMode.dark : ThemeMode.light,
+      theme: AppTheme.light,
+      locale: appLocale,
+      supportedLocales: const [
+        Locale('en', ''),
+        Locale('fr', ''),
+        Locale('km', ''),
+      ],
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      // home: TodoScreen(),
     );
   }
 }
@@ -59,6 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String _email = "Unknown email";
   String _token = "none";
   User? user;
+
   Future<void> _getGreeting() async {
     String greeting = "";
     try {
@@ -92,13 +105,12 @@ class _HomeScreenState extends State<HomeScreen> {
         'https://devapi.mentra.glass/api/auth/exchange-token',
         data: {'supabaseToken': _token},
       );
-      print("code ${res.statusCode} - body ${res.data}");
+      debugPrint("code ${res.statusCode} - body ${res.data}");
       if (res.statusCode == 200) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text("Success")));
-      } else {
-      }
+      } else {}
     } on DioException catch (e) {
       ScaffoldMessenger.of(
         context,
@@ -158,3 +170,5 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
+

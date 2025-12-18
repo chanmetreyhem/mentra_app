@@ -1,0 +1,7 @@
+{
+  "@@locale": "fr",
+  "chooseLanguageTitle": "Choisissez votre langue",
+  "@chooseLanguageTitle": {
+    "description": "Titre pour l'écran Choisissez votre langue"
+  }
+}

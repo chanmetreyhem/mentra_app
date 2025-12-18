@@ -170,7 +170,7 @@ class TodoNotifier extends Notifier<List<TodoState>> {
   }
 
 
-  Future<void> addTodo(String title, String description) async {
+  Future<void> addTodo(String title, String description,TodoStatus? status,DateTime? endDate) async {
     _isLoading = true;
     await Future.delayed(Duration(microseconds: 10000));
     var todo = TodoState(
@@ -178,7 +178,8 @@ class TodoNotifier extends Notifier<List<TodoState>> {
       description: description,
       isCompleted: false,
       createDate: DateTime.now(),
-      status: TodoStatus.notStarted
+      status:  status,
+      completedDate: endDate,
     );
 
     if (!ref.mounted) return;

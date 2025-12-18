@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../utils/custom_extension.dart';
+
 class CustomProgressIndicator extends StatelessWidget {
   final String status;
   final Color color;
@@ -30,7 +32,7 @@ class CustomProgressIndicator extends StatelessWidget {
                   padding: EdgeInsets.all(2),
                   strokeWidth: 10,
                   color: color,
-                  backgroundColor: Colors.black,
+                  backgroundColor: context.theme.primaryColor,
                   value: value,
                 ),
               ),
@@ -53,6 +55,7 @@ class CustomProgressIndicator extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w200,
+                        color: context.theme.primaryColor
                       ),
                     ),
                   ],
@@ -67,7 +70,7 @@ class CustomProgressIndicator extends StatelessWidget {
           child: SizedBox(
             height: 100,
             width: 100,
-            child: Center(child: Text("${(value * 100).toStringAsFixed(1)}.%")),
+            child: Center(child: Text("${(value * 100).toStringAsFixed(1)}.%",style: TextStyle(color: context.theme.primaryColor),)),
           ),
         ),
       ],

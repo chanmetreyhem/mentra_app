@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mentra_app/features/setting/presentation/setting_screen.dart';
 import 'package:mentra_app/features/todos/presentation/todo_screen.dart';
+import 'package:mentra_app/utils/custom_extension.dart';
 import 'features/todos/presentation/add_todo_screen.dart';
 import 'features/todos/presentation/todo_description.dart';
 
@@ -87,8 +88,8 @@ class _ScaffoldWithNavbarState extends State<ScaffoldWithNavbar> {
           widget.navigationShell.goBranch(index, initialLocation: index == 0);
         },
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.add), label: 'Add'),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: context.loc!.home),
+          BottomNavigationBarItem(icon: Icon(Icons.add), label: context.loc!.add),
         ],
       ),
     );

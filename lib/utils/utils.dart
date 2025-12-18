@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mentra_app/core/enums/filter_type.dart';
 
 import '../features/todos/data/todo_status.dart';
+import 'custom_extension.dart';
 
  class Utils {
   static Color getColorFromStatus(TodoStatus status) {
@@ -17,7 +18,7 @@ import '../features/todos/data/todo_status.dart';
     }
   }
 
-  static Color getColorFromFilterType(FilterType filter) {
+  static Color getColorFromFilterType(FilterType filter,BuildContext? context) {
     switch (filter) {
       case FilterType.notStarted:
         return Colors.red;
@@ -26,7 +27,7 @@ import '../features/todos/data/todo_status.dart';
       case FilterType.onCompleted:
         return Colors.green;
       default:
-        return Colors.black;
+        return context!.theme.primaryColor ?? Colors.grey;
     }
   }
 }
