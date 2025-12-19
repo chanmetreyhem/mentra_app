@@ -4,9 +4,14 @@ import 'package:mentra_app/core/enums/filter_type.dart';
 import 'package:mentra_app/features/todos/data/todo_repository.dart';
 import 'package:mentra_app/features/todos/data/todo_state.dart';
 import 'package:mentra_app/features/todos/data/todo_status.dart';
-final todoRepositoryProvider = Provider<TodoRepository>((ref) => TodoRepository());
 
-final todoListProvider = NotifierProvider<TodoNotifier, List<TodoState>>(TodoNotifier.new);
+final todoRepositoryProvider = Provider<TodoRepository>(
+  (ref) => TodoRepository(),
+);
+
+final todoListProvider = NotifierProvider<TodoNotifier, List<TodoState>>(
+  TodoNotifier.new,
+);
 
 final filterProvider = StateProvider<FilterType>((ref) {
   return FilterType.all;
@@ -16,21 +21,43 @@ final filteredTodosProvider =
     Provider.family<List<TodoState>, (String, FilterType?)>((ref, arg) {
       String query = arg.$1;
       FilterType filterType = arg.$2 ?? ref.watch(filterProvider);
-      List<TodoState> todos = ref.watch(todoListProvider);
-      if(query.length > 2){
-        todos = todos.where((t) => t.title.toLowerCase().contains(query.toLowerCase())).toList();
+      final todos = ref.watch(todoListProvider);
+
+      List<TodoState> filteredList = [...todos];
+      if (query.length > 2) {
+        filteredList = filteredList
+            .where((t) => t.title.toLowerCase().contains(query.toLowerCase()))
+            .toList();
       }
+
+
       switch (filterType) {
         case FilterType.all:
-          return todos;
+          filteredList = filteredList;
+          break;
         case FilterType.notStarted:
-          return todos.where((t) => t.status == TodoStatus.notStarted).toList();
+          filteredList = filteredList
+              .where((t) => t.status == TodoStatus.notStarted)
+              .toList();
+          break;
+        case FilterType.completed:
+          filteredList = filteredList
+              .where((t) => t.status == TodoStatus.onCompleted)
+              .toList();
+          break;
         case FilterType.inProgress:
-          return todos.where((t) => t.status == TodoStatus.inProgress).toList();
-        case FilterType.onCompleted:
-          return todos.where((t) => t.status == TodoStatus.onCompleted).toList();
+          filteredList = filteredList
+              .where((t) => t.status == TodoStatus.inProgress)
+              .toList();
+          break;
+        // default:
+        //   filteredList = filteredList;
+        //   break;
       }
+      return filteredList..sort((a, b) => b.createDate.compareTo(a.createDate));
     });
+
+
 
 class TodoNotifier extends Notifier<List<TodoState>> {
   bool _isLoading = false;
@@ -169,8 +196,12 @@ class TodoNotifier extends Notifier<List<TodoState>> {
     ];
   }
 
-
-  Future<void> addTodo(String title, String description,TodoStatus? status,DateTime? endDate) async {
+  Future<void> addTodo(
+    String title,
+    String description,
+    TodoStatus? status,
+    DateTime? endDate,
+  ) async {
     _isLoading = true;
     await Future.delayed(Duration(microseconds: 10000));
     var todo = TodoState(
@@ -178,7 +209,7 @@ class TodoNotifier extends Notifier<List<TodoState>> {
       description: description,
       isCompleted: false,
       createDate: DateTime.now(),
-      status:  status,
+      status: status,
       completedDate: endDate,
     );
 
@@ -186,7 +217,6 @@ class TodoNotifier extends Notifier<List<TodoState>> {
 
     state = [...state, todo];
     _isLoading = false;
-
   }
 
   void removeTodo(TodoState todo) {
@@ -194,25 +224,27 @@ class TodoNotifier extends Notifier<List<TodoState>> {
       return t != todo;
     }).toList();
   }
-  void updateTodoStatus(TodoState todo,TodoStatus status){
+
+  void updateTodoStatus(TodoState todo, TodoStatus status) {
     state = state.map((t) {
-      if(t == todo){
+      if (t == todo) {
         return t.copyWith(status: status);
       }
       return t;
     }).toList();
   }
 
-  void toggleTodoStatus(bool isCompleted,TodoState todo){
-     state = state.map((t) {
-       if(t == todo){
-         return t.copyWith(isCompleted: isCompleted,status: isCompleted ? TodoStatus.onCompleted : TodoStatus.notStarted);
-       }
-       return t;
-     }).toList();
+  void toggleTodoStatus(bool isCompleted, TodoState todo) {
+    state = state.map((t) {
+      if (t == todo) {
+        return t.copyWith(
+          isCompleted: isCompleted,
+          status: isCompleted ? TodoStatus.onCompleted : TodoStatus.notStarted,
+        );
+      }
+      return t;
+    }).toList();
   }
-
-
 
   void getAllCompletedTodo() {
     state = state.where((t) => t.isCompleted == true).toList();

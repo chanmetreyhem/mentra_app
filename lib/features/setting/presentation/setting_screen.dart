@@ -60,6 +60,7 @@ class SettingScreen extends HookConsumerWidget {
               textAlign: TextAlign.center,
             ),
           ),
+          const SizedBox(height: 10),
           FilledButton(
             onPressed: () => _changeLanguage(const Locale('km', '')),
             style: FilledButton.styleFrom(

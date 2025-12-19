@@ -79,9 +79,10 @@ class TodoTile extends HookConsumerWidget {
                   in TodoStatus.values)
                     Center(
                       child: Text(
-                        "status: ${status.name}",
+                        "${context.loc!.status}: ${status.getTitle(context)}",
                         style: TextStyle(
                           color: color,
+                          fontWeight: FontWeight.w700
                         ),
                       ),
                     ),
@@ -101,7 +102,7 @@ class TodoTile extends HookConsumerWidget {
                       TodoStatus
                   >(
                     value: status,
-                    child: Text(status.name),
+                    child: Text(status.getTitle(context),style: TextStyle(color: Colors.black)),
                   ),
               ],
               onChanged: (value) {
@@ -125,23 +126,23 @@ class TodoTile extends HookConsumerWidget {
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: Text("Message"),
+              title: Text(context.loc!.message),
               content: Text(
-                "Are you sure you want to delete this task?",
+              context.loc!.deleteMessage,
               ),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text("Cancel"),
+                  child: Text(context.loc!.cancel),
                 ),
                 TextButton(
                   onPressed: () {
                     todoNotifier.removeTodo(todo);
                     Navigator.pop(context);
                   },
-                  child: Text("Delete"),
+                  child: Text(context.loc!.ok),
                 ),
               ],
             ),

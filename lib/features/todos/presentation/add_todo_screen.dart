@@ -22,7 +22,7 @@ class CreateTodoScreen extends HookConsumerWidget {
     final status = useState<TodoStatus>(TodoStatus.none);
 
     void createTodo() {
-      print("end date $endDateController.text");
+      //print("end date $endDateController.text");
       todoNotifier.addTodo(
         titleController.text,
         descriptionController.text,
@@ -43,12 +43,16 @@ class CreateTodoScreen extends HookConsumerWidget {
     useEffect(() {
       print("on mounted");
       return () {
-        print("cleanup");
+          status.dispose();
+          titleController.dispose();
+          descriptionController.dispose();
+          endDateController.dispose();
+          print("on dispose");
       }; // cleanup function if needed
     }, []);
 
     return Scaffold(
-      appBar: AppBar(title: Text("${context.loc!.add} Todo")),
+      appBar: AppBar(title: Text("${context.loc!.add} ${context.loc!.task}")),
       body: Padding(
         padding: const EdgeInsets.all(10),
         child: Form(
@@ -61,7 +65,7 @@ class CreateTodoScreen extends HookConsumerWidget {
                 controller: titleController,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter title text';
+                    return context.loc!.pleaseEnter(context.loc!.title);
                   }
                   return null;
                 },
@@ -74,7 +78,7 @@ class CreateTodoScreen extends HookConsumerWidget {
                 controller: descriptionController,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter description text';
+                    return context.loc!.pleaseEnter(context.loc!.description);
                   }
                   return null;
                 },
@@ -102,18 +106,18 @@ class CreateTodoScreen extends HookConsumerWidget {
                 // hintText: "None",
                 validator: (value) {
                   if (value == null || value == TodoStatus.none) {
-                    return 'Please select a status';
+                    return context.loc!.pleaseSelect(context.loc!.status);
                   }
                   return null;
                 },
                 onSelected: (value) {
                   status.value = value!;
-                  print(value);
+                 // print(value);
                 },
                 initialSelection: status.value,
                 dropdownMenuEntries: [
                   for (var status in TodoStatus.values)
-                    DropdownMenuEntry(value: status, label: status.name),
+                    DropdownMenuEntry(value: status, label: status.getTitle(context)),
                 ],
               ),
 

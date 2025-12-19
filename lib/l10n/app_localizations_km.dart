@@ -58,4 +58,32 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get priority => 'Priority';
+
+  @override
+  String get none => 'មិនមាន';
+
+  @override
+  String get ok => 'យល់ព្រម';
+
+  @override
+  String get cancel => 'បោះបង់';
+
+  @override
+  String get message => 'សារ';
+
+  @override
+  String get deleteMessage => 'តើអ្នកពិតជាចង់លុបកិច្ចការនេះមែនទេ?';
+
+  @override
+  String get task => 'កិច្ចការ';
+
+  @override
+  String pleaseSelect(Object title) {
+    return 'សូមជ្រើសរើស $title';
+  }
+
+  @override
+  String pleaseEnter(Object title) {
+    return 'សូមបញ្ចូល $title';
+  }
 }

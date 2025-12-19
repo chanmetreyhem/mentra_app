@@ -24,7 +24,7 @@ import 'custom_extension.dart';
         return Colors.red;
       case FilterType.inProgress:
         return Colors.amber;
-      case FilterType.onCompleted:
+      case FilterType.completed:
         return Colors.green;
       default:
         return context!.theme.primaryColor ?? Colors.grey;

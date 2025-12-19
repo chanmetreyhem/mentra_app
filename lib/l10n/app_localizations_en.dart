@@ -58,4 +58,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get priority => 'Priority';
+
+  @override
+  String get none => 'None';
+
+  @override
+  String get ok => 'Ok';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get message => 'Message';
+
+  @override
+  String get deleteMessage => 'Are you sure you want to delete this task?';
+
+  @override
+  String get task => 'Task';
+
+  @override
+  String pleaseSelect(Object title) {
+    return 'Please select $title';
+  }
+
+  @override
+  String pleaseEnter(Object title) {
+    return 'Please enter $title';
+  }
 }

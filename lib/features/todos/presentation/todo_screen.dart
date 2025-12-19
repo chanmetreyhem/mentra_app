@@ -39,123 +39,149 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("Task", style: TextStyle(fontSize: 30)),
-          actions: [
-            IconButton(
-              onPressed: () {
-                context.pushNamed('setting');
-              },
-              icon: Icon(Icons.settings),
-            ),
-          ],
-        ),
-        body: todoNotifier.isLoading
-            ? Center(child: CircularProgressIndicator())
-            : Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  spacing: 20,
-                  crossAxisAlignment: .start,
-                  children: [
-                    TextField(
-                      style: TextStyle(color: context.theme.primaryColor),
-                      cursorColor: context.theme.primaryColor,
-                      decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        hintText: context.loc!.search,
-                        prefixIcon: const Icon(Icons.search),
-                      ),
-                      onChanged: (value) {
-                        //  ref.read(searchQueryProvider).sta = value;
-                        setState(() {
-                          searchQuery = value;
-                        });
-                      },
-                    ),
-
-                    Row(
-                      spacing: 5,
-                      children: [
-                        for (var filter in FilterType.values)
-                          InkWell(
-                            borderRadius: BorderRadius.circular(10),
-                            //splashFactory: InkRipple.splashFactory,
-                            splashColor: Utils.getColorFromFilterType(
-                              filter,
-                              context,
-                            ).withAlpha(100),
-                            onTap: () => filterNotifier.state = filter,
-                            child: Container(
-                              alignment: Alignment.center,
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: filterNotifier.state == filter
-                                      ? Utils.getColorFromFilterType(
-                                          filter,
-                                          context,
-                                        )
-                                      : Colors.grey.withOpacity(0.5),
-                                ),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Text(
-                                filter.name,
-                                style: TextStyle(
-                                  color: filterNotifier.state == filter
-                                      ? Utils.getColorFromFilterType(
-                                          filter,
-                                          context,
-                                        )
-                                      : Colors.grey.withOpacity(0.5),
-                                ),
-                              ),
-                            ),
-                          ),
+      child: SafeArea(
+        child: Scaffold(
+          // appBar: AppBar(
+          //   title: Text("Task", style: TextStyle(fontSize: 30)),
+          //   actions: [
+          //     IconButton(
+          //       onPressed: () {
+          //         context.pushNamed('setting');
+          //       },
+          //       icon: Icon(Icons.settings),
+          //     ),
+          //   ],
+          // ),
+          body: todoNotifier.isLoading
+              ? Center(child: CircularProgressIndicator())
+              : NestedScrollView(
+                  floatHeaderSlivers: false,
+                  headerSliverBuilder: (context, innerScrolled) => [
+                    SliverAppBar(
+                     // snap: true,
+                      //floating: true,
+                      //pinned: true,
+                     // centerTitle: true,
+                      // expandedHeight: 100,
+                      title: Text("Task", style: TextStyle(fontSize: 30)),
+                      actions: <Widget>[
+                        IconButton(
+                          onPressed: () {
+                            context.pushNamed('setting');
+                          },
+                          icon: Icon(Icons.settings),
+                        ),
                       ],
                     ),
-                    _todoProgressDataGroup(inProgress, notStarted, onCompleted),
-                    Text(
-                    "${context.loc!.total} : $total",
-                      style: TextStyle(color: context.theme.primaryColor),
-                    ),
-                    Expanded(
-                      child: todosFilters.isEmpty
-                          ? Center(
-                              child: Text(
-                                "not task",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.normal,
+                  ],
+        
+                  body: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      spacing: 20,
+                      crossAxisAlignment: .start,
+                      children: [
+                        TextField(
+                          style: TextStyle(color: context.theme.primaryColor),
+                          cursorColor: context.theme.primaryColor,
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
+                            hintText: context.loc!.search,
+                            prefixIcon: const Icon(Icons.search),
+                          ),
+                          onChanged: (value) {
+                            //  ref.read(searchQueryProvider).sta = value;
+                            setState(() {
+                              searchQuery = value;
+                            });
+                          },
+                        ),
+        
+                        Row(
+                          spacing: 5,
+                          children: [
+                            for (var filter in FilterType.values)
+                              InkWell(
+                                borderRadius: BorderRadius.circular(10),
+                                //splashFactory: InkRipple.splashFactory,
+                                splashColor: Utils.getColorFromFilterType(
+                                  filter,
+                                  context,
+                                ).withAlpha(100),
+                                onTap: () => filterNotifier.state = filter,
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: filterNotifier.state == filter
+                                          ? Utils.getColorFromFilterType(
+                                              filter,
+                                              context,
+                                            )
+                                          : Colors.grey.withOpacity(0.5),
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Text(
+                                    filter.getTitle(context),
+                                    style: TextStyle(
+                                      color: filterNotifier.state == filter
+                                          ? Utils.getColorFromFilterType(
+                                              filter,
+                                              context,
+                                            )
+                                          : Colors.grey.withOpacity(0.5),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            )
-                          : SingleChildScrollView(
-                              physics: BouncingScrollPhysics(),
-                              child: Column(
-                                children: List.generate(todosFilters.length, (
-                                  i,
-                                ) {
-                                  final todo = todosFilters[i];
-                                  final color = Utils.getColorFromStatus(
-                                    todo.status ?? TodoStatus.notStarted,
-                                  );
-                                  return TodoTile(
-                                    todo: todo,
-                                  );
-                                }),
-                              ),
-                            ),
+                          ],
+                        ),
+                        _todoProgressDataGroup(
+                          inProgress,
+                          notStarted,
+                          onCompleted,
+                        ),
+                        Text(
+                          "${context.loc!.total} : $total",
+                          style: TextStyle(color: context.theme.primaryColor),
+                        ),
+                        Expanded(
+                          child: todosFilters.isEmpty
+                              ? Center(
+                                  child: Text(
+                                    "not task",
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                  ),
+                                )
+                              : SingleChildScrollView(
+                                  physics: BouncingScrollPhysics(),
+                                  child: Column(
+                                    children: List.generate(todosFilters.length, (
+                                      i,
+                                    ) {
+                                      final todo = todosFilters[i];
+                                      final color = Utils.getColorFromStatus(
+                                        todo.status ?? TodoStatus.notStarted,
+                                      );
+                                      return TodoTile(todo: todo);
+                                    }),
+                                  ),
+                                ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
+        ),
       ),
     );
   }
